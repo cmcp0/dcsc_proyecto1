@@ -9,8 +9,8 @@ class Usuario(models.Model):
 	apellidos = models.CharField(max_length=20)
 	email = models.EmailField(max_length=50)
 	contrasena = models.CharField(max_length=50)
-	confir_contra = models.CharField(max_length=50)
-	
+	_token = models.CharField(max_length=50)
+
 
 
 class Concurso(models.Model):
@@ -24,10 +24,10 @@ class Concurso(models.Model):
 
 
 
-class Video(models.Model):	
+class Video(models.Model):
 	fechasub = models.DateTimeField()
 	estado = models.CharField(max_length=50)
-	video =models.FileField(upload_to='videossc/')	
+	video =models.FileField(upload_to='videossc/')
 	descrip = models.CharField(max_length=200)
 	particoncu= models.ForeignKey(Concurso)
 	nombreconcursante= models.CharField(max_length=50)
