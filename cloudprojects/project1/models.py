@@ -20,16 +20,16 @@ class Concurso(models.Model):
 	feini =models.DateTimeField()
 	fefin =models.DateTimeField()
 	premio = models.CharField(max_length=200)
-	administraconcu= models.ForeignKey(Usuario)
+	administraconcu= models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
 
 
 class Video(models.Model):
 	fechasub = models.DateTimeField()
 	estado = models.CharField(max_length=50)
-	video =models.FileField(upload_to='videossc/')
+	video =models.CharField(max_length=200)
 	descrip = models.CharField(max_length=200)
-	particoncu= models.ForeignKey(Concurso)
+	particoncu= models.ForeignKey(Concurso, on_delete=models.CASCADE)
 	nombreconcursante= models.CharField(max_length=50)
 	apellidoconcursante= models.CharField(max_length=50)
 	emailconcursante= models.EmailField(max_length=50)
