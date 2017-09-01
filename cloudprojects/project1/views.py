@@ -35,7 +35,8 @@ def usuarios(request, id=-1):
 		# print(request.GET.__getitem__('key'))
 		# print(id)
 		# 
-		key = request.GET.__getitem__('key')
+		key = request.META['HTTP_TOKEN'] 
+		print key
 		try:
 			user = Usuario.objects.get(_token=key)
 		except (KeyError, Usuario.DoesNotExist):
@@ -57,13 +58,14 @@ def usuarios(request, id=-1):
 	if metodo == 'POST':
 		body_unicode = request.body.decode('utf-8')
 		body = json.loads(body_unicode)
+		print body
 		user_email = body['email']
 
 		try:
 			user = Usuario.objects.get(email=user_email)
 		except (KeyError, Usuario.DoesNotExist):
 			# save user
-			user = Usuario(**body)
+			user = Usuario(nombres=body['nombres'], apellidos=body['apellidos'],email=body['email'],contrasena=body["contrasena"],_token=body["token"])
 			user.save()
 			return JsonResponse({'mensaje': 'Usuario guardado'})
 		else:
