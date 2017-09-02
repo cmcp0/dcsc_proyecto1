@@ -9,14 +9,15 @@ class Usuario(models.Model):
 	apellidos = models.CharField(max_length=20)
 	email = models.EmailField(max_length=50)
 	contrasena = models.CharField(max_length=50)
-	_token = models.CharField(max_length=50)
+	_token = models.CharField(max_length=50,primary_key=True)
 
 
 
 class Concurso(models.Model):
 	nombreconcu = models.CharField(max_length=100)
+	imagenurl = models.CharField(max_length=100)
 	imagenconcu = models.ImageField(upload_to='imagen/')
-	urlconcu =models.URLField()
+	urlconcu =models.CharField(max_length=100)
 	feini =models.DateTimeField()
 	fefin =models.DateTimeField()
 	premio = models.CharField(max_length=200)
