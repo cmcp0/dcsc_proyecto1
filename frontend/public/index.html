@@ -24,11 +24,28 @@
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" content-type="application/javascript" type="text/css" href="./style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.1/firebase-auth.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAjajgN45i-QBA5L3oZoOe6caMv9wKGB2E",
+            authDomain: "smarttools-jscardona12.firebaseapp.com",
+            databaseURL: "https://smarttools-jscardona12.firebaseio.com",
+            projectId: "smarttools-jscardona12",
+            storageBucket: "smarttools-jscardona12.appspot.com",
+            messagingSenderId: "948114200644"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <link rel="stylesheet" content-type="application/javascript" type="text/css" href="%PUBLIC_URL%/style.css">
+
     <title>Smart Tools</title>
   </head>
-  <body>
+  <body class="bgimg">
     <div id="app"></div>
-    <script src="../bundle.js" />
   </body>
+  <script src="./bundle.js" ></script>
 </html>

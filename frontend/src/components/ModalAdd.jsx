@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import Modal from 'react-modal';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import ListaConcursos from "./ListaConcursos";
+import axios from 'axios';
+import * as firebase from 'firebase'
 const customStyles = {
     content: {
         top: '50%',
@@ -26,10 +30,10 @@ export default class ModalAdd extends Component {
             modalIsOpen: false,
             name: '',
             description: '',
-            city: '',
-            country: '',
-            pay: '',
-            currency: '',
+            fechaInicio:'',
+            fechaFin:'',
+            image:'',
+            url:'',
 
         };
 
@@ -45,8 +49,22 @@ export default class ModalAdd extends Component {
     }
 
     insertarConcurso() {
+        var formData = new FormData();
+        formData.append('nombreconcu',this.state.name);
+        formData.append('urlconcu',this.state.url);
+        formData.append('imagen',document.getElementById('imagen').files[0]);
+        formData.append('feini',this.state.fechaInicio);
+        formData.append('fefin',this.state.fechaFin);
+        formData.append('premio',this.state.description);
+        formData.append('admin',this.props.user);
+        axios.post("http://localhost:8000/project1/concurso", formData).then(function () {
+            console.log("ok");
+        }).catch(function () {
+            console.log("err");
+        });
         this.closeModal();
     }
+
     render() {
         // Just render a placeholder container that will be filled in
         return (
@@ -59,52 +77,61 @@ export default class ModalAdd extends Component {
                     <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal.bind(this)}
                            contentLabel="Register"
                            shouldCloseOnOverlayClick={true} style={customStyles}>
-                        <form onSubmit={this.insertarConcurso.bind(this)}>
+                        <form id="form-insertar" onSubmit={this.insertarConcurso.bind(this)}>
                             <div className="text-center">
                                 <h3>Añadir Concurso</h3>
                             </div>
-                            <h5> Name </h5>
+                            <h5> Nombre </h5>
                             <div>
-                                <input id="sinput" type="text" value={this.state.name} placeholder="Name" required
+                                <input className="sinput" id="nombreconcu" type="text" value={this.state.name} placeholder="Nombre" required
                                        onChange={(event) => {
                                            this.setState({name: event.target.value})
                                        }}/>
                             </div>
-                            <h5> Description </h5>
+                            <h5> Imagen </h5>
                             <div>
-                            <textarea id="sinput" type="text" value={this.state.description} placeholder="Description"
+
+                                <input id="imagen" type="file" value={this.state.image}
+                                       placeholder="Seleccione la imagen"
+                                       onChange={(event) => {
+                                        this.setState({image: event.target.value})
+                                }}/>
+                            </div>
+                            <h5> URL </h5>
+                            <div>
+                                <input id="urlconcu" className="sinput" type="text" value={this.state.url}
+                                       placeholder="URL"
+                                       required onChange={(event) => {
+                                    this.setState({url: event.target.value})
+                                }}/>
+                            </div>
+
+                            <h5> Fecha Inicio(DD/MM/YYYY o N/A) </h5>
+                            <div>
+                                <input id="feini" className="sinput" type="text" value={this.state.fechaInicio}
+                                       placeholder="Fecha Inicio" required
+                                       onChange={(event) => {
+                                           this.setState({fechaInicio: event.target.value})
+                                       }}/>
+                            </div>
+                            <h5> Fecha Fin(DD/MM/YYYY o N/A) </h5>
+                            <div>
+                                <input id="fefin" className="sinput" type="text" value={this.state.fechaFin}
+                                       placeholder="Fecha Fin" required
+                                       onChange={(event) => {
+                                           this.setState({fechaFin: event.target.value})
+                                       }}/>
+                            </div>
+
+                            <h5> Descripcion Premio </h5>
+                            <div>
+                            <textarea id="premio" className="sinput" type="text" value={this.state.description} placeholder="Description"
                                       required onChange={(event) => {
                                 this.setState({description: event.target.value})
                             }}></textarea>
                             </div>
-                            <h5> Country </h5>
-                            <div>
 
-                            </div>
-                            <h5> City </h5>
-                            <div>
-                                <input id="sinput" type="text" value={this.state.city}
-                                       placeholder="City"
-                                       required onChange={(event) => {
-                                    this.setState({city: event.target.value})
-                                }}/>
-                            </div>
-                            <h5> Pay </h5>
-                            <div>
-                                <input id="sinput" type="number" value={this.state.pay}
-                                       placeholder="Pay"
-                                       required onChange={(event) => {
-                                    this.setState({pay: event.target.value})
-                                }}/>
-                            </div>
-                            <h5> Currency </h5>
-                            <div>
-                                <input id="sinput" type="text" value={this.state.currency}
-                                       placeholder="Currency"
-                                       required onChange={(event) => {
-                                    this.setState({currency: event.target.value})
-                                }}/>
-                            </div>
+
 
                             <div className="row" id="registerButtons">
                                 <div className="col-md-6 text-center">
@@ -125,3 +152,4 @@ export default class ModalAdd extends Component {
         )
     }
 }
+

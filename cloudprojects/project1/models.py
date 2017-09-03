@@ -28,7 +28,8 @@ class Concurso(models.Model):
 class Video(models.Model):
 	fechasub = models.DateTimeField()
 	estado = models.CharField(max_length=50)
-	video =models.CharField(max_length=200)
+	videoSubido =models.FileField(upload_to='videosSubidos/')
+	videoPublicado =models.FileField(upload_to='videosPublicados/')
 	descrip = models.CharField(max_length=200)
 	particoncu= models.ForeignKey(Concurso, on_delete=models.CASCADE)
 	nombreconcursante= models.CharField(max_length=50)

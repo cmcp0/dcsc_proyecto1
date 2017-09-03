@@ -5,7 +5,9 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import ModalAdd from './ModalAdd.jsx'
-
+import InfoConcurso from './InfoConcurso.jsx';
+import * as firebase from 'firebase';
+import axios from 'axios';
 const customStyles = {
     content: {
         top: '50%',
@@ -21,13 +23,31 @@ const customStyles = {
         width: '30%'
     }
 };
-
+var concursos =[];
 export default class ListaConcursos extends Component {
 
     constructor(props) {
         super(props);
 
+        this.state ={
+            user:'',
+            concursos:[],
+
+        };
+        console.log(this.props.user)
+        this.concs ={};
+
         this.onSelect = this.onSelect.bind(this);
+    }
+
+    editConcurso(formData){
+        console.log('ENTROOOOOOOOOOOOOOOOOOOO');
+        axios.put("http://localhost:8000/project1/concurso", formData).then(function () {
+            console.log("ok");
+        }).catch(function () {
+            console.log("err");
+        });
+        alert('Se a editado el concurso');
     }
 
     onSelect(val) {
@@ -38,15 +58,26 @@ export default class ListaConcursos extends Component {
         this.setState({filterPay: value});
     }
 
-    insertJob() {
-        // console.log("Insert A Job");
-        // Meteor.call('jobs.insert', this.state.name, this.state.description, this.state.city, this.state.country,
-        //     this.state.pay, this.state.currency);
-        // console.log(Jobs.find({owner: Meteor.userId()}).fetch())
-        // console.log("Insert Job");
-        // this.closeModal();
-    }
 
+
+    getConcursos() {
+        axios.get("http://localhost:8000/project1/concurso",
+            {headers: {
+                token: this.props.user,
+                 url: 'hola',
+                 isurl:'false',
+            }})
+            .then(response => {
+                this.setState({
+                    concursos: response.data
+                })
+                console.log(this.state.concursos);
+                console.log('SUCCESS');
+                console.log(response);
+            }).catch(function () {
+            console.log("err");
+        })
+    }
     openModal() {
         this.setState({modalIsOpen: true});
     }
@@ -55,30 +86,37 @@ export default class ListaConcursos extends Component {
         this.setState({modalIsOpen: false});
     }
 
-    render() {
+    componentDidMount (){
+        var user = this.props.user;
+        console.log(user);
+        this.getConcursos();
 
-        return (
-            <div className="container job-container">
-                <div className="col-md-3">
-                    <div id="job-filter">
-                        <ModalAdd/>
-                    </div>
-
-                </div>
-                <div className="col-md-9" id="job-list">
-                    {/*{filteredJobs.map((job, index) => {*/}
-                    {/*return <Job key={index} delete={true} job={job}/>*/}
-                {/*})}*/}
-                </div>
-            </div>
-
-        )
     }
 
+    render() {
+
+            return (
+                <div className="container job-container">
+                    <div className="col-md-3">
+                        <div id="job-filter">
+                            <ModalAdd user={this.props.user}/>
+                        </div>
+
+                    </div>
+                    <div className="col-md-9" id="job-list">
+                        {console.log(this.state.concursos)}
+                        {this.state.concursos.map((concurso, index) => {
+                            return <InfoConcurso edit={this.editConcurso.bind(this)}key={index} user={this.props.user} pk={concurso.pk} concurso={concurso.fields}/>
+                        })}
+                    </div>
+                </div>
+
+            )
+        }
 }
 
 ListaConcursos.propTypes = {
-    jobs: PropTypes.array,
+    user: PropTypes.string.isRequired,
     currentUser: PropTypes.object,
     onSelect: React.PropTypes.func
 };

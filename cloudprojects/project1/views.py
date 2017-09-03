@@ -120,23 +120,34 @@ def concursos(request, id=-1):
         # print(request.GET.__getitem__('key'))
         # print(id)
         key = request.META['HTTP_TOKEN'] 
+        url = request.META['HTTP_URL'] 
+        isurl = request.META['HTTP_ISURL'] 
         print key
-        try:
-            #válida si el usuario tiene acceso a data
-            usuario = Usuario.objects.get(_token=key)
-        
-        except (KeyError, Usuario.DoesNotExist):
-             
-            return JsonResponse({'error1': 'Token invalido'})
+        print url
+        print isurl
+        if isurl != 'true':
+            try:
+                usuario = Usuario.objects.get(_token=key)
+            except (KeyError, Usuario.DoesNotExist):
+                  return JsonResponse({'error1': 'Token invalido'})
+            else:
+                try:
+                    if id > -1:
+                        concursoToGet = [Concurso.objects.get(administraconcu=key)]
+                    else:
+                        concursoToGet =Concurso.objects.all().filter(administraconcu=key)
+                except (KeyError, Concurso.DoesNotExist):
+                        return JsonResponse({'error2': 'Concurso no existe'})
+                else:
+                     data = serializers.serialize('json', concursoToGet)
+                     return HttpResponse(data)
         else:
-            # print('val')
-
             try:
                 if id > -1:
                     concursoToGet = [Concurso.objects.get(administraconcu=key)]
                 else:
                     
-                    concursoToGet =Concurso.objects.all().filter(administraconcu=key)
+                    concursoToGet = [Concurso.objects.get(urlconcu=url)]
             except (KeyError, Concurso.DoesNotExist):
                 return JsonResponse({'error2': 'Concurso no existe'})
             else:
@@ -166,20 +177,21 @@ def concursos(request, id=-1):
 
 
     if metodo == 'DELETE':
-        # print(QueryDict(request.get_full_path().split("?")[1]).get('key'))
-        print(id)
-        _sessionToken = QueryDict(request.get_full_path().split("?")[1]).get('key')
+       
+        key = request.META['HTTP_TOKEN'] 
+        pk = request.META['HTTP_PK'] 
+        print pk
 
         try:
-            usuario = Usuario.objects.get(_token=_sessionToken)
+            usuario = Usuario.objects.get(_token= key)
         except (KeyError, Usuario.DoesNotExist):
             return JsonResponse({'error': 'Usuario invalido'})
         else:
             try:
                 if id > -1:
-                    concursoToDel = Concurso.objects.get(id=id)
+                    concursoToDel = Concurso.objects.get(id=pk)
                 else:
-                    return JsonResponse({'error': 'Concurso no encontrado'})    
+                    concursoToDel = Concurso.objects.get(id=pk)   
 
             except (KeyError, Concurso.DoesNotExist):
                 return JsonResponse({'error': 'Concurso no existe'})
@@ -190,11 +202,11 @@ def concursos(request, id=-1):
 
     if metodo == 'PUT':
         body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        concurso_id= body['id']
-
+        data = json.loads(body_unicode)
+        concurso_id= data['id']
+        print data
         try:
-            concurso_ = Concurso.objects.get(id=concurso_id)
+            concurso= Concurso.objects.get(id=concurso_id)
             
         except (KeyError, Concurso.DoesNotExist):
             # save user
@@ -202,8 +214,13 @@ def concursos(request, id=-1):
             return JsonResponse({'mensaje': 'Concurso no encontrado'})
         else:
             # return error
-            concurso_ = Concurso(**body)
-            concurso_.save()
+            concurso= Concurso.objects.get(pk=concurso_id)
+            concurso.nombreconcu = data['nombreconcu']
+            concurso.urlconcu = data['urlconcu']
+            concurso.feini = datetime.datetime.strptime(data['feini'], '%d/%m/%Y')
+            concurso.fefin = datetime.datetime.strptime(data['fefin'], '%d/%m/%Y')
+            concurso.premio = data['premio']
+            concurso.save()
             return JsonResponse({'correcto': ' Concurso modificado'})           
 
 def videos(request, id=-1):
@@ -213,14 +230,14 @@ def videos(request, id=-1):
         # print(request.scheme)
         # print(request.GET.__getitem__('key'))
         # print(id)
-        key = request.GET.__getitem__('key')
+        key = request.META['HTTP_TOKEN']
         try:
             #válida si el usuario tiene acceso a data
-            usuario = Usuario.objects.get(_token=key)
+            concurso = Concurso.objects.get(id=key)
         
         except (KeyError, Usuario.DoesNotExist):
              
-            return JsonResponse({'error1': 'Token invalido'})
+            return JsonResponse({'error1': 'concurso no existe invalido'})
         else:
             # print('val')
 
@@ -228,28 +245,41 @@ def videos(request, id=-1):
                 if id > -1:
                     videoToGet = [Video.objects.get(id=id)]
                 else:
-                    
-                    videoToGet = Video.objects.all()
+                    videoToGet = Video.objects.all().filter(particoncu=key)
 
             except (KeyError, Video.DoesNotExist):
                 return JsonResponse({'error2': 'Video no existe'})
             else:
-                data = serializers.serialize('json', videoToGet, fields=('fechasub','estado','video', 'descrip','particoncu','nombreconcursante','apellidoconcursante','emailconcursante' ))
-                return JsonResponse(data, safe=False)
+                data = serializers.serialize('json', videoToGet)
+                return HttpResponse(data)
 
-    if metodo == 'POST':
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        concurso_id = body['particoncu_id']
+    if metodo == 'POST' and request.FILES['video']:
+
+        myfile = request.FILES['video']
+        fs = FileSystemStorage()
+
+        filename = fs.save(myfile.name, myfile)
+        uploaded_file_url = fs.url(filename)
+        print uploaded_file_url
+        data = request.POST
 
         try:
-            concurso_ = Concurso.objects.get(id=concurso_id)
-            video_ = Video(**body)
+            concurso_ = Concurso.objects.get(pk=int(data['pk']))
+            # video_ = Video(**body)
+            if data['formato'] == 'mp4':
+                video_ = Video(fechasub=datetime.datetime.strptime(data['fecha'],'%d/%m/%Y'),estado='Convertido',videoSubido=myfile,videoPublicado=myfile,descrip=data['mensaje'],particoncu=concurso_,nombreconcursante=data['nombres'],apellidoconcursante=data['apellidos'],emailconcursante=data['email'])
+
+            else:
+                video_ = Video(fechasub=datetime.datetime.strptime(data['fecha'],'%d/%m/%Y'),estado='Pendiente',videoSubido=myfile,descrip=data['mensaje'],particoncu=concurso_,nombreconcursante=data['nombres'],apellidoconcursante=data['apellidos'],emailconcursante=data['email'])
+
+
             video_.save()
             return JsonResponse({'mensaje': 'Video guardado'})
+
+
         except (KeyError, Concurso.DoesNotExist):
             # save user
-            
+
             return JsonResponse({'mensaje': 'Video no guardado'})
         
             
