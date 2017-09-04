@@ -95,9 +95,17 @@ export default class InfoConcurso extends Component {
         return (
             <div className="container" id="job-filter">
                 <div>
+                    <h2> {this.props.video.estado}</h2>
                     <h4>{this.props.video.nombreconcursante} {this.props.video.apellidoconcursante}</h4>
                     <h4>Email: {this.props.video.emailconcursante}</h4>
                     <h4> Mensaje: {this.props.video.descrip}</h4>
+                    <br/>
+                    <h4>Video original</h4>
+                    <video width="400" controls>
+                    <source src={ROOT_URL+ this.props.video.videoSubido} type="video/mp4"/>
+                    Your browser does not support HTML5 video.</video>
+
+                    <h4>Video convertido</h4>
                     <video width="400" controls>
                         <source src={ROOT_URL+ this.props.video.videoPublicado} type="video/mp4"/>
                         Your browser does not support HTML5 video.</video>

@@ -6,6 +6,7 @@ import axios from 'axios';
 import ModalAddVideo from './ModalAddVideo.jsx'
 import SweetAlert from 'react-bootstrap-sweetalert';
 import InfoVideo  from './InfoVideo.jsx';
+import InfoVideoAdmin  from './InfoVideoAdmin.jsx';
 const customStyles = {
     content: {
         top: '50%',
@@ -119,52 +120,91 @@ export default class ListaVideos extends Component {
 
 
     render() {
-        const hideAlert=()=>{
-            this.setState({
-                alert: null
-            });
-        }
-        const constsuccesA =()=> {
-            this.setState({
-                alert: getSuccessAlert
-            });
-
-        }
-
-        const getSuccessAlert = (
-            <SweetAlert
-                success
-                title='Video Enviado'
-                text ='Hemos recibido tu video y lo estamos procesado para que sea publicado. Tan pronto el video quede publicado en la página del concurso te notificaremos por email.'
-                onConfirm={hideAlert}>
-            </SweetAlert>
-
-        );
-        return (
-            <div className="container job-container">
-                <div className="row">
-                    <div className="col-md-3">
-                       <div id="job-filter">
-                          <ModalAddVideo pk={this.state.concurso.pk}/>
+        console.log(this.state.concurso.fields.administraconcu );
+        console.log(this.props.user);
+        if(!this.props.user){
+            return (
+                <div className="container job-container">
+                    <div className="row">
+                        <div className="col-md-3">
+                            <div id="job-filter">
+                                <ModalAddVideo pk={this.state.concurso.pk}/>
+                            </div>
+                        </div>
+                        <div className="col-md-9 text">
+                            <div id="job-filter">
+                                <h1>{this.state.concurso.fields.nombreconcu}</h1>
+                                {this.state.alert}
+                            </div>
                         </div>
                     </div>
-                    <div className="col-md-9 text">
-                        <div id="job-filter">
-                            <h1>{this.state.concurso.fields.nombreconcu}</h1>
-                            {this.state.alert}
+                    <div className="row">
+                        <div className="col-md-3"></div>
+                        <div className="col-md-8" id="job-list">
+                            {console.log(this.state.videos)}
+                            {this.state.videos.map((video, index) => {
+                                return <InfoVideo key={index} video={video.fields}/>
+                            })}
                         </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-3"></div>
-                     <div className="col-md-8" id="job-list">
-                         {console.log(this.state.videos)}
-                         {this.state.videos.map((video, index) => {
-                             return <InfoVideo key={index} video={video.fields}/>
-                         })}
-                </div>
-                </div>
-            </div>)
+                </div>)
+
+        }
+        else if(this.state.concurso.fields.administraconcu == this.props.user) {
+            return (
+                <div className="container job-container">
+                    <div className="row">
+                        <div className="col-md-3">
+                            <div id="job-filter">
+                                <ModalAddVideo pk={this.state.concurso.pk}/>
+                            </div>
+                        </div>
+                        <div className="col-md-9 text">
+                            <div id="job-filter">
+                                <h1>{this.state.concurso.fields.nombreconcu}</h1>
+                                {this.state.alert}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-3"></div>
+                        <div className="col-md-8" id="job-list">
+                            {console.log(this.state.videos)}
+                            {this.state.videos.map((video, index) => {
+                                return <InfoVideoAdmin key={index} video={video.fields}/>
+                            })}
+                        </div>
+                    </div>
+                </div>)
+        }
+        else {
+            return (
+                <div className="container job-container">
+                    <div className="row">
+                        <div className="col-md-3">
+                            <div id="job-filter">
+                                <ModalAddVideo pk={this.state.concurso.pk}/>
+                            </div>
+                        </div>
+                        <div className="col-md-9 text">
+                            <div id="job-filter">
+                                <h1>{this.state.concurso.fields.nombreconcu}</h1>
+                                {this.state.alert}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-3"></div>
+                        <div className="col-md-8" id="job-list">
+                            {console.log(this.state.videos)}
+                            {this.state.videos.map((video, index) => {
+                                return <InfoVideo key={index} video={video.fields}/>
+                            })}
+                        </div>
+                    </div>
+                </div>)
+
+        }
     }
 
 }
