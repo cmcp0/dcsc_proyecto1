@@ -36,8 +36,8 @@ def usuarios(request, id=-1):
         # print(request.scheme)
         # print(request.GET.__getitem__('key'))
         # print(id)
-        # 
-        key = request.META['HTTP_TOKEN'] 
+        #
+        key = request.META['HTTP_TOKEN']
         print key
         try:
             user = Usuario.objects.get(_token=key)
@@ -100,16 +100,16 @@ def usuarios(request, id=-1):
 
         try:
             user = Usuario.objects.get(id=user_id)
-            
+
         except (KeyError, Usuario.DoesNotExist):
             # save user
-            
+
             return JsonResponse({'mensaje': 'Usuario no encontrado'})
         else:
             # return error
             user = Usuario(**body)
             user.save()
-            return JsonResponse({'correcto': ' Usuario modificado'})            
+            return JsonResponse({'correcto': ' Usuario modificado'})
 
 
 def concursos(request, id=-1):
@@ -119,9 +119,9 @@ def concursos(request, id=-1):
         # print(request.scheme)
         # print(request.GET.__getitem__('key'))
         # print(id)
-        key = request.META['HTTP_TOKEN'] 
-        url = request.META['HTTP_URL'] 
-        isurl = request.META['HTTP_ISURL'] 
+        key = request.META['HTTP_TOKEN']
+        url = request.META['HTTP_URL']
+        isurl = request.META['HTTP_ISURL']
         print key
         print url
         print isurl
@@ -146,7 +146,7 @@ def concursos(request, id=-1):
                 if id > -1:
                     concursoToGet = [Concurso.objects.get(administraconcu=key)]
                 else:
-                    
+
                     concursoToGet = [Concurso.objects.get(urlconcu=url)]
             except (KeyError, Concurso.DoesNotExist):
                 return JsonResponse({'error2': 'Concurso no existe'})
@@ -173,13 +173,13 @@ def concursos(request, id=-1):
             return JsonResponse({'mensaje': 'Concurso guardado'})
         else:
             # return error
-            return JsonResponse({'error': 'Ya existe el Concurso'})             
+            return JsonResponse({'error': 'Ya existe el Concurso'})
 
 
     if metodo == 'DELETE':
-       
-        key = request.META['HTTP_TOKEN'] 
-        pk = request.META['HTTP_PK'] 
+
+        key = request.META['HTTP_TOKEN']
+        pk = request.META['HTTP_PK']
         print pk
 
         try:
@@ -191,7 +191,7 @@ def concursos(request, id=-1):
                 if id > -1:
                     concursoToDel = Concurso.objects.get(id=pk)
                 else:
-                    concursoToDel = Concurso.objects.get(id=pk)   
+                    concursoToDel = Concurso.objects.get(id=pk)
 
             except (KeyError, Concurso.DoesNotExist):
                 return JsonResponse({'error': 'Concurso no existe'})
@@ -207,10 +207,10 @@ def concursos(request, id=-1):
         print data
         try:
             concurso= Concurso.objects.get(id=concurso_id)
-            
+
         except (KeyError, Concurso.DoesNotExist):
             # save user
-            
+
             return JsonResponse({'mensaje': 'Concurso no encontrado'})
         else:
             # return error
@@ -221,7 +221,7 @@ def concursos(request, id=-1):
             concurso.fefin = datetime.datetime.strptime(data['fefin'], '%d/%m/%Y')
             concurso.premio = data['premio']
             concurso.save()
-            return JsonResponse({'correcto': ' Concurso modificado'})           
+            return JsonResponse({'correcto': ' Concurso modificado'})
 
 def videos(request, id=-1):
     metodo = request.method
@@ -234,9 +234,9 @@ def videos(request, id=-1):
         try:
             #válida si el usuario tiene acceso a data
             concurso = Concurso.objects.get(id=key)
-        
+
         except (KeyError, Usuario.DoesNotExist):
-             
+
             return JsonResponse({'error1': 'concurso no existe invalido'})
         else:
             # print('val')
@@ -256,11 +256,11 @@ def videos(request, id=-1):
     if metodo == 'POST' and request.FILES['video']:
 
         myfile = request.FILES['video']
-        fs = FileSystemStorage()
+        # fs = FileSystemStorage()
 
-        filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        print uploaded_file_url
+        # filename = fs.save(myfile.name, myfile)
+        # uploaded_file_url = fs.url(filename)
+        # print uploaded_file_url
         data = request.POST
 
         try:
@@ -281,8 +281,8 @@ def videos(request, id=-1):
             # save user
 
             return JsonResponse({'mensaje': 'Video no guardado'})
-        
-            
+
+
     if metodo == 'PUT':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
@@ -290,17 +290,17 @@ def videos(request, id=-1):
 
         try:
             video_ = Video.objects.get(id=video_id)
-            
+
         except (KeyError, Concurso.DoesNotExist):
-                        
+
             return JsonResponse({'mensaje': 'Video no encontrado'})
-        
-        else: 
+
+        else:
             # return error
             video_ = Video(**body)
             video_.save()
             return JsonResponse({'correcto': ' Video modificado'})
-                        
+
 
     if metodo == 'DELETE':
         # print(QueryDict(request.get_full_path().split("?")[1]).get('key'))
@@ -316,10 +316,10 @@ def videos(request, id=-1):
                 if id > -1:
                     videoToDel = Video.objects.get(id=id)
                 else:
-                    return JsonResponse({'error': 'Concurso no encontrado'})    
+                    return JsonResponse({'error': 'Concurso no encontrado'})
 
             except (KeyError, Video.DoesNotExist):
                 return JsonResponse({'error': 'Video no existe'})
             else:
                 videoToDel.delete()
-                return JsonResponse({'mensaje':'Video Borrado'})                    
+                return JsonResponse({'mensaje':'Video Borrado'})

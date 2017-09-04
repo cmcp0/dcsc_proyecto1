@@ -26,7 +26,7 @@ SECRET_KEY = '+v*(6#)ku8l-45h*93p^ht*yl$tme)ued8*g-2@l77ss=*1pfl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [u'192.168.0.13']
 
 
 # Application definition
@@ -115,7 +115,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'proyecto1',
         'USER': 'postgres',
-        'PASSWORD': 'Menfis15',
+        'PASSWORD': 'mayraj',
+        # 'PASSWORD': 'Menfis15',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -160,4 +161,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-
