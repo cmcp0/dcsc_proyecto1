@@ -21,4 +21,5 @@
 #
 # m h  dom mon dow   command
 # Nota: Se debe configurar el directorio primero
-*/5 * * * * root cd /home/marius/Documents/dcsc_proyecto1/cloudprojects/ && bash convert.sh > /home/marius/Documents/listener.log 2>&1
+#*/1 * * * * hace que se ejecute cada minuto
+*/1 * * * * root cd /home/marius/Documents/dcsc_proyecto1/cloudprojects/ && bash convert.sh > /home/marius/Documents/listener.log 2>&1
